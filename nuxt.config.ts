@@ -11,12 +11,19 @@ export default defineNuxtConfig({
     typeCheck: true,
   },
 
+  build: { transpile: ['@fawmi/vue-google-maps'] },
+
+  runtimeConfig: {
+    public: { GOOGLE_MAPS_API_KEY: 'AIzaSyBo01vnxd0-p9-a7NgqTaU9GAUgJdGYJ3E' },
+  },
+
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
     '@nuxtjs/tailwindcss',
     'nuxt-headlessui',
     '@nuxtjs/google-fonts',
+    '@vee-validate/nuxt',
   ],
 
   googleFonts: {
@@ -24,6 +31,8 @@ export default defineNuxtConfig({
       'Montserrat Alternates': [],
     },
   },
+
+  plugins: ['@/plugins/vueGoogleMaps.ts'],
 
   css: ['public/assets/main.css'],
   postcss: {

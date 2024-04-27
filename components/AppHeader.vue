@@ -9,15 +9,13 @@
         <div>
           <NuxtLink to="/" class="flex items-center mx-auto">
             <img
-              src="/media/attar74_/Work/Event Guiders/EventGuidersFront/public/assets/e-colored.svg"
+              :src="eColored"
               class="mr-3 w-[1.625rem] h-auto"
               alt="EventGuider Logo"
             />
-            <img
-              src="/media/attar74_/Work/Event Guiders/EventGuidersFront/public/assets/logo-colored.svg"
-              class="w-[9.3rem] h-auto"
-              alt="EventGuider text Logo"
-            />
+            <span class="text-[#2A2F4F] text-[1.5rem] font-extrabold leading-9">
+              Event Guiders
+            </span>
           </NuxtLink>
         </div>
 
@@ -233,9 +231,11 @@
         class="z-50 fixed inset-y-0 right-0 w-full bg-[#2A2F4F] py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 overflow-y-auto overflow-x-hidden"
       >
         <div class="flex items-center justify-between px-[0.5rem]">
-          <a href="#" class="-m-1.5 p-1.5">
-            <span class="sr-only">Event Guiders</span>
-            <img class="h-5 w-auto" :src="Logo" alt="Logo" />
+          <a href="#" class="-m-1.5 p-1.5 flex gap-x-[0.5rem]">
+            <img class="h-5 w-auto my-auto" :src="e" alt="e" />
+            <span class="text-[#fff] text-[1.25rem] font-extrabold leading-9">
+              Event Guiders
+            </span>
           </a>
           <button
             type="button"
@@ -307,9 +307,11 @@
 </template>
 
 <script setup lang="ts">
-import Logo from '/media/attar74_/Work/Event Guiders/EventGuidersFront/public/assets/logo.svg';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
+import eColored from '@/public/assets/e-colored.svg';
+import e from '@/public/assets/e.svg';
+import LogoColored from '@/public/assets/logo-colored.svg';
 
 import {
   Dialog,
