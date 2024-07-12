@@ -1,5 +1,10 @@
 <template>
-  <div class="container mx-auto px-[1rem] md:px-[4rem] mt-[2.5rem] mb-[6.5rem]">
-    step 2
+  <div>
+    <Photos />
   </div>
 </template>
+<script setup lang="ts">
+definePageMeta({
+  layout: 'registeration-steps',
+});
+</script>

@@ -6,3 +6,20 @@ body {
   font-family: 'Montserrat Alternates', sans-serif;
   background-color: #f7f7f8;
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+  background-color: #ff3d9a;
+}
+
+::-webkit-scrollbar-track {
+  /* Customize the scrollbar track */
+  width: 4px;
+  background-color: #ccc6c9;
+}
+
+::-webkit-scrollbar-thumb {
+  /* Customize the scrollbar thumb */
+  width: 4px;
+  background-color: #ff3d9a;
+}

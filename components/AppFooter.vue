@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-[#2A2F4F]">
+  <footer class="bg-[#2A2F4F] inset-x-0 bottom-0">
     <!-- sticky bottom-0 -->
     <div class="mx-auto w-full max-w-screen-xl">
       <div class="px-4 py-6 lg:flex lg:items-center lg:justify-between">

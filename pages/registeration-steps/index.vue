@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-[1rem] md:px-[4rem] mt-[2.5rem] mb-[6.5rem]">
+  <div class="container mx-auto px-[1rem] md:px-[4rem] mt-[2.5rem] mb-[10rem]">
     <div class="text-center xl:px-[25rem]">
       <p class="text-[#2A2F4F] text-[1.5rem] font-bold leading-10">
         Prepare your storefront and stand out!
@@ -25,9 +25,14 @@
         Our team will review your data carefully and notify you to continue all
         process to publish your account with us
       </p>
-      <button disabled class="rounded-[2rem] bg-[#AAACB9] px-[5rem] py-[1rem]">
-        <p class="text-[#fff] text[1rem] leading-7 font-bold">Finish</p>
-      </button>
+      <NuxtLink to="/registeration-steps/reviewing">
+        <button
+          class="rounded-[2rem] bg-[#AAACB9] px-[5rem] py-[1rem]"
+          :disabled="userStore?.userData?.status !== 'VendorReview'"
+        >
+          <p class="text-[#fff] text[1rem] leading-7 font-bold">Finish</p>
+        </button>
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -36,6 +41,11 @@
 import steps from '@/constants/registeration-steps';
 
 definePageMeta({
-  layout: 'default',
+  layout: 'registeration-steps',
 });
+
+import { useUserStore } from '~/stores/user.state.js';
+
+// Pinia Store
+const userStore = useUserStore();
 </script>

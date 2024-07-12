@@ -11,6 +11,10 @@ export default defineNuxtConfig({
     typeCheck: true,
   },
 
+  imports: {
+    dirs: ['./helper/*.ts'],
+  },
+
   build: { transpile: ['@fawmi/vue-google-maps'] },
 
   runtimeConfig: {
@@ -24,7 +28,25 @@ export default defineNuxtConfig({
     'nuxt-headlessui',
     '@nuxtjs/google-fonts',
     '@vee-validate/nuxt',
+    // '@nuxtjs/axios',
+    // '@nuxtjs/auth',
   ],
+
+  // axios: {
+  //   baseURL: 'http://127.0.0.1:5173/api',
+  // },
+
+  // auth: {
+  //   strategies: {
+  //     local: {
+  //       endpoints: {
+  //         login: { url: 'login', method: 'post', propertyName: 'data.token' },
+  //         user: { url: 'me', method: 'get', propertyName: 'data' },
+  //         logout: false,
+  //       },
+  //     },
+  //   },
+  // },
 
   googleFonts: {
     families: {
@@ -43,4 +65,5 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  ssr: false,
 });
