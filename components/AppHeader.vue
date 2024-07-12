@@ -4,9 +4,10 @@
       class="bg-white border-gray-200 px-4 lg:px-6 border-b-[#D4D5DC] border-[1px]"
     >
       <div
-        class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 md:p-[0.75rem]"
+        class="flex flex-wrap items-center justify-between mx-auto p-4 md:p-[0.75rem]"
+        :class="isDrawer ? 'w-full' : 'max-w-screen-xl'"
       >
-        <div>
+        <div :class="{ 'flex justify-between gap-x-[5rem]': isDrawer }">
           <NuxtLink to="/" class="flex items-center mx-auto">
             <img
               :src="eColored"
@@ -17,6 +18,59 @@
               Event Guiders
             </span>
           </NuxtLink>
+
+          <div
+            v-if="props.isDrawer"
+            class="flex justify-between gap-x-[1rem] cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="25"
+              height="18"
+              viewBox="0 0 25 18"
+              fill="none"
+              class="my-auto"
+            >
+              <path
+                d="M1.77734 1H23.1107"
+                stroke="#262F39"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M1.77734 17H23.1107"
+                stroke="#262F39"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M8.88867 6.33337L23.1109 6.33337"
+                stroke="#262F39"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M8.88867 11.6666L23.1109 11.6666"
+                stroke="#262F39"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M1.33312 9.76989C0.740524 9.42776 0.740523 8.57242 1.33312 8.23029L5.33311 5.92089C5.92571 5.57876 6.66645 6.00642 6.66645 6.69069L6.66645 11.3095C6.66645 11.9938 5.92571 12.4214 5.33312 12.0793L1.33312 9.76989Z"
+                fill="#262F39"
+              />
+            </svg>
+            <p class="text-[#7F8295] text-[0.875rem] leading-6 my-auto">
+              Storefront
+            </p>
+            <p class="text-[#2A2F4F] text-[1rem] leading-7 font-bold my-auto">
+              /
+            </p>
+
+            <p class="text-[#2A2F4F] text-[1rem] leading-7 font-bold my-auto">
+              Business info
+            </p>
+          </div>
         </div>
 
         <button
@@ -92,9 +146,9 @@
                   </defs>
                 </svg>
                 <p
-                  class="ml-1 text-[#2A2F4F] text-[0.75rem] font-bold leading-6"
+                  class="ml-1 text-[#2A2F4F] text-[0.875rem] font-bold leading-6"
                 >
-                  01157717485
+                  {{ currentUserPhone }}
                 </p>
               </NuxtLink>
             </li>
@@ -147,11 +201,11 @@
                     <p
                       class="text-[#555972] text-[0.75rem] font-medium text-left"
                     >
-                      Hello
+                      Welcome !
                     </p>
                     <div class="flex">
                       <p class="text-[#000] text-[0.875rem] font-semibold">
-                        Mahmod Attar
+                        {{ currentUserName }}
                       </p>
                       <ChevronDownIcon
                         class="transition duration-500 text-[#000] w-[1.5rem] my-auto"
@@ -178,7 +232,10 @@
                       >
                         <div class="w-[16.875rem]">
                           <div class="flex justify-between">
-                            <div class="flex">
+                            <button
+                              @click="logout"
+                              class="ml-[0.5rem] font-semibold text-gray-900 text-[1rem] flex gap-x-1"
+                            >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="20"
@@ -202,12 +259,8 @@
                                   </clipPath>
                                 </defs>
                               </svg>
-                              <button
-                                class="ml-[0.5rem] block font-semibold text-gray-900 text-[1rem]"
-                              >
-                                Log Out
-                              </button>
-                            </div>
+                              Log Out
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -311,7 +364,7 @@ import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 import eColored from '@/public/assets/e-colored.svg';
 import e from '@/public/assets/e.svg';
-import LogoColored from '@/public/assets/logo-colored.svg';
+import { useUserStore } from '~/stores/user.state.js';
 
 import {
   Dialog,
@@ -321,7 +374,33 @@ import {
   PopoverPanel,
 } from '@headlessui/vue';
 
+const router = useRouter();
+
+// const router = useRouter();
 const mobileMenuOpen = ref(false);
 
+// Pinia Store
+const userStore = useUserStore();
+
+const currentUserName = computed(() => {
+  return userStore.userData?.userName ?? '';
+});
+
+const currentUserPhone = computed(() => {
+  return userStore.userData?.phoneNumber?.number ?? '01xxxxxxxxx';
+});
+
 const switchBtn = ref(false);
+
+interface Props {
+  isDrawer: Boolean;
+}
+
+const props = defineProps<Props>();
+
+const logout = async () => {
+  await userStore.onLogout();
+  await router.push('/auth/login');
+  window.location.reload();
+};
 </script>
