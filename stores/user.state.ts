@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
-import { useStorage } from '@vueuse/core';
 
 let user: any = {};
+let accessToken = '';
+let refreshToken = '';
 if (process.client) {
   user = JSON.parse(localStorage.getItem('user') || '{}');
-} else {
-  console.log('yyy');
+  accessToken = JSON.parse(localStorage.getItem('accessToken') || '{}');
+  refreshToken = JSON.parse(localStorage.getItem('refreshToken') || '{}');
 }
 
 const { login } = useAuth();
@@ -13,6 +14,8 @@ const { login } = useAuth();
 export const useUserStore = defineStore('user', {
   state: () => ({
     userState: !!Object.keys(user).length ? user : null,
+    accessToken: accessToken ?? '',
+    refreshToken: refreshToken ?? '',
     loggedInState: !!Object.keys(user).length ? true : false,
   }),
   getters: {
@@ -25,10 +28,20 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     updateUser(user: any) {
-      user
-        ? localStorage.setItem('user', JSON.stringify(user))
+      const { accessToken = '', refreshToken = '', ...user_data } = user ?? {};
+      user_data
+        ? localStorage.setItem('user', JSON.stringify(user_data))
         : localStorage.removeItem('user');
+      accessToken
+        ? localStorage.setItem('accessToken', JSON.stringify(accessToken))
+        : localStorage.removeItem('accessToken');
+      refreshToken
+        ? localStorage.setItem('refreshToken', JSON.stringify(refreshToken))
+        : localStorage.removeItem('refreshToken');
+
       this.userState = user;
+      this.accessToken = accessToken;
+      this.refreshToken = refreshToken;
     },
     updateLoggedIn(value: any) {
       localStorage.setItem('loggedIn', value);

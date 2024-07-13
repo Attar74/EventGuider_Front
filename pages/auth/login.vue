@@ -198,6 +198,7 @@ import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import { useUserStore } from '~/stores/user.state.js';
 import { useCommonStore } from '~/stores/common.state.js';
+import login from '~/apis/login';
 
 definePageMeta({
   layout: 'auth',
@@ -215,13 +216,6 @@ if (route.query.registered) {
     isregistered.value = false;
   }, 4000);
 }
-// const data = useFetch('/api/auth/login')
-
-const setCountries = async () => {
-  if (localStorage.getItem('countries')) {
-    return;
-  }
-};
 
 const showPassword = ref(false);
 
@@ -243,17 +237,26 @@ const onSubmit = handleSubmit(
   async (values) => {
     const { email, password } = values;
 
-    const userPayload = {
+    const userPayload: any = {
       identifier: email,
       password,
     };
     loginBtnLoading.value = true;
     try {
-      await userStore.onLogin(userPayload);
-      if (Object.keys(userStore.userData ?? {}).length) {
+      const { data } = await login(userPayload);
+
+      const user = {
+        ...data.user,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      };
+      userStore.updateUser(user);
+      userStore.updateLoggedIn(true);
+      if (Object.keys(user ?? {}).length) {
         router.push('/registeration-steps');
       }
-    } catch {
+    } catch (e) {
+      console.error(e);
     } finally {
       loginBtnLoading.value = false;
       commonStore.setCountries();

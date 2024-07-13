@@ -1,7 +1,7 @@
 <template>
   <div
     class="mx-auto px-[1rem] md:px-[4rem] mt-[2.5rem] mb-[10rem]"
-    :class="{ 'max-w-[55rem]': header }"
+    :class="{ 'max-w-[55rem]': true }"
   >
     <div>
       <div class="text-center" v-if="header">
@@ -54,8 +54,9 @@
               id="file_input"
               type="file"
               @change="uploadPhotos"
-              accept="image/*"
+              accept="image/png"
               multiple
+              :disabled="images.length >= 8"
             />
             <div
               class="flex cursor-pointer border-[0.063rem] border-[#FF3D9A] border-dashed rounded-[0.875rem] bg-[#ff3d9a08] py-[2.5rem]"
@@ -103,7 +104,7 @@
                 <div
                   class="bg-gradient-to-t from-slate-300 to-[#2a2f4f14] h-full rounded-[0.875rem]"
                 >
-                  <button>
+                  <button @click="removeImage(image)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="32"
@@ -158,7 +159,7 @@
           </div>
         </div>
       </div>
-      <div class="flex mt-[2rem] md:mt-[4rem]" v-if="actions">
+      <div class="flex mt-[2rem] md:mt-[4rem]">
         <div
           class="flex flex-col sm:flex-row justify-center gap-x-[1.5rem] gap-y-[0.5rem] sm:gap-y-0 mx-auto"
         >
@@ -169,13 +170,12 @@
               <p class="text-[#FF3D9A] text[1rem] leading-7 font-bold">Back</p>
             </button>
           </NuxtLink>
-          <NuxtLink to="/registeration-steps/reviewing">
-            <button
-              class="rounded-[2rem] bg-[#FF3D9A] w-[11.25rem] border-[0.063rem] border-[#FF3D9A] h-[3.5rem] cursor-pointer"
-            >
-              <p class="text-[#fff] text[1rem] leading-7 font-bold">Save</p>
-            </button>
-          </NuxtLink>
+          <button
+            @click="goToReviewingPage"
+            class="rounded-[2rem] bg-[#FF3D9A] w-[11.25rem] border-[0.063rem] border-[#FF3D9A] h-[3.5rem] cursor-pointer"
+          >
+            <p class="text-[#fff] text[1rem] leading-7 font-bold">Save</p>
+          </button>
         </div>
       </div>
     </div>
@@ -183,31 +183,37 @@
 </template>
 
 <script lang="ts" setup>
+import { getMedia, updateMedia, deleteMedia } from '~/apis/media';
+
 definePageMeta({
   layout: 'registeration-steps',
 });
 
-defineProps({
+const props = defineProps({
   header: { type: Boolean, default: true },
   actions: { type: Boolean, default: true },
 });
 
+const router = useRouter();
+
+const goToReviewingPage = () => {
+  props.actions && router.push('/registeration-steps/reviewing');
+};
 // Pinia Store
 const userStore = useUserStore();
 
 let currentUser: any = ref({});
-const { step3: getPhotos, updateStep3: updatePhotos } = useSteps();
 const images: any = ref([]);
 
 const setCurrentUserData = async () => {
   try {
-    const { data } = await getPhotos(userStore.userData.id);
+    const { data } = await getMedia();
     if (data) {
-      images.value = [...data];
+      images.value = [...data.data];
     }
     currentUser.value = {
       ...userStore.userData,
-      ...data,
+      ...data.data,
       phoneNumber: data?.phoneNumber?.number ?? '',
     };
   } catch (err) {
@@ -215,21 +221,35 @@ const setCurrentUserData = async () => {
   }
 };
 
-const uploadPhotos = async (e: any) => {
-  const image = e.target.files[0];
-  const reader = new FileReader();
-  // reader.readAsDataURL(image);
+const removeImage = async (imageUrl: string) => {
   try {
-    // reader.onload = async (e) => {
-    console.log('🚀 ~ uploadPhotos ~ image:', image);
+    await deleteMedia(imageUrl);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    setCurrentUserData();
+  }
+};
 
-    await updatePhotos(image);
-    // };
+let adImgBase64: any = ref('');
+
+const uploadPhotos = async (event: any) => {
+  const file = event.target.files[0];
+  adImgBase64.value = file;
+
+  const form: FormData | any = {
+    photos: adImgBase64.value,
+  };
+
+  try {
+    await updateMedia(form);
   } catch {
   } finally {
     setCurrentUserData();
   }
 };
 
-setCurrentUserData();
+onMounted(() => {
+  setCurrentUserData();
+});
 </script>

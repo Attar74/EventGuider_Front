@@ -1,9 +1,9 @@
 <template>
   <div
     class="mx-auto px-[1rem] md:px-[4rem] mt-[2.5rem] mb-[10rem]"
-    :class="{ 'max-w-[50rem]': header }"
+    :class="{ 'max-w-[55rem]': true }"
   >
-    <div>
+    <div v-if="!isPageLoading">
       <div class="text-center" v-if="header">
         <div class="bg-[#ff3d9a08] mx-auto p-[1.5rem] w-[5rem] rounded-xl">
           <svg
@@ -295,7 +295,7 @@
             </div>
           </div>
         </div>
-        <div v-if="actions" class="flex mt-[2rem] md:mt-[4rem]">
+        <div class="flex mt-[2rem] md:mt-[4rem]">
           <div
             class="flex flex-col sm:flex-row justify-center gap-x-[1.5rem] gap-y-[0.5rem] sm:gap-y-0 mx-auto"
           >
@@ -353,12 +353,13 @@ import webIcon from '@/public/assets/svgs_icons/web.svg';
 import { useUserStore } from '~/stores/user.state.js';
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
+import { getBasicInfo, updateBasicInfo } from '~/apis/basicInfo';
 
 definePageMeta({
   layout: 'registeration-steps',
 });
 
-defineProps({
+const props = defineProps({
   header: { type: Boolean, default: true },
   actions: { type: Boolean, default: true },
 });
@@ -405,15 +406,17 @@ let [telPhoneNumber, telPhoneNumberAttrs] = defineField('telPhoneNumber');
 // Pinia Store
 const userStore = useUserStore();
 
+const isPageLoading = ref(false);
 let currentUser: any = ref({});
-const { step1: getBasicInfo, updateStep1 } = useSteps();
 
 const setCurrentUserData = async () => {
+  isPageLoading.value = true;
   try {
     const { data } = await getBasicInfo();
+
     currentUser.value = {
       ...userStore.userData,
-      ...data,
+      ...data.data,
     };
 
     currentUser.value.email &&
@@ -426,7 +429,7 @@ const setCurrentUserData = async () => {
         currentUser.value.businessDescription ?? ''
       );
     currentUser.value.tradeName &&
-      setFieldValue('tradeName', currentUser.value.userName ?? '');
+      setFieldValue('tradeName', currentUser.value.tradeName ?? '');
     currentUser.value.phoneNumber &&
       setFieldValue(
         'phoneNumber',
@@ -441,6 +444,8 @@ const setCurrentUserData = async () => {
       setFieldValue('website', currentUser.value.websiteUrl ?? '');
   } catch (err) {
     console.log(err);
+  } finally {
+    isPageLoading.value = false;
   }
 };
 const onUpdateUserData = handleSubmit(async (values) => {
@@ -460,8 +465,8 @@ const onUpdateUserData = handleSubmit(async (values) => {
         number: values.telPhoneNumber,
       },
     };
-    await updateStep1(payload);
-    router.push('/registeration-steps/step2');
+    await updateBasicInfo(payload);
+    props.actions && router.push('/registeration-steps/step2');
   } catch (err) {
     console.log(err);
   } finally {

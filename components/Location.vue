@@ -1,9 +1,9 @@
 <template>
   <div
     class="mx-auto px-[1rem] md:px-[4rem] mt-[2.5rem] mb-[10rem]"
-    :class="{ 'max-w-[50rem]': header }"
+    :class="{ 'max-w-[55rem]': true }"
   >
-    <div>
+    <div v-if="!isPageLoading">
       <div class="text-center" v-if="header">
         <div class="bg-[#ff3d9a08] mx-auto p-[1.5rem] w-[5rem] rounded-xl">
           <svg
@@ -54,7 +54,7 @@
               <p class="text-[#2A2F4F] text-[0.875rem] leading-6 mb-[0.25rem]">
                 City <span class="text-[#FF3D9A]">*</span>
               </p>
-              <select
+              <!-- <select
                 name="Category"
                 v-model="cityId"
                 v-bind="cityIdAttrs"
@@ -69,8 +69,8 @@
                 >
                   {{ city.title }}
                 </option>
-              </select>
-              <!-- <PopoverGroup class="my-[1rem] md:my-auto">
+              </select> -->
+              <PopoverGroup class="my-[1rem] md:my-auto">
                 <Popover class="relative" v-slot="{ open }">
                   <PopoverButton
                     class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-white focus:outline-none w-full"
@@ -83,8 +83,8 @@
                             name="Category"
                             class="w-full border-[#D4D5DC] border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] text-[#000] rounded-full block h-[3rem] md:h-[3.5rem] pl-5 p-2.5 dark:placeholder-[#AAACB9]"
                             placeholder="Choose your category"
-                            v-model="category"
-                            v-bind="CategoryAttrs"
+                            :value="cityTitle"
+                            v-bind="cityTitleAttrs"
                           />
                         </div>
                         <ChevronDownIcon
@@ -95,7 +95,7 @@
                       </div>
                     </div>
                   </PopoverButton>
-  
+
                   <transition
                     enter-active-class="transition ease-out duration-200"
                     enter-from-class="opacity-0 translate-y-1"
@@ -109,28 +109,26 @@
                     >
                       <div
                         class="rounded-[1rem] mx-[1.5rem] hover:bg-[#ff3d9a0d] my-[1rem]"
-                        v-for="i in 2"
                       >
                         <div
                           class="px-[1rem] py-[0.75rem] flex items-center cursor-pointer"
                         >
                           <p
-                            @click="category = 'Type'"
                             class="ml-2 text-[1rem] font-semibold text-[#2A2F4F]"
                           >
-                            Type {{ i }}
+                            Cairo
                           </p>
                         </div>
                       </div>
                     </PopoverPanel>
                   </transition>
                 </Popover>
-              </PopoverGroup> -->
+              </PopoverGroup>
               <div
-                v-if="errors.cityId"
+                v-if="errors.cityTitle"
                 class="text-[#cc0000] mx-[1rem] text-[0.875rem] md:text-[1rem] my-[0.75rem]"
               >
-                {{ errors.cityId }}
+                {{ errors.cityTitle }}
               </div>
             </div>
             <!-- <div>
@@ -242,7 +240,7 @@
             </div>
           </div>
         </div>
-        <div class="flex mt-[2rem] md:mt-[4rem]" v-if="actions">
+        <div class="flex mt-[2rem] md:mt-[4rem]">
           <div
             class="flex flex-col sm:flex-row justify-center gap-x-[1.5rem] gap-y-[0.5rem] sm:gap-y-0 mx-auto"
           >
@@ -282,24 +280,27 @@ import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 import { useUserStore } from '~/stores/user.state.js';
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
+import { getAddress, updateAddress } from '~/apis/address';
 
 definePageMeta({
   layout: 'registeration-steps',
 });
 
-defineProps({
+const props = defineProps({
   header: { type: Boolean, default: true },
   actions: { type: Boolean, default: true },
 });
 
 const { errors, handleSubmit, defineField, setFieldValue } = useForm<any>({
   validationSchema: yup.object({
-    cityId: yup.number().required(),
+    // cityId: yup.number().required(),
+    cityTitle: yup.string().required(),
     address: yup.string().min(3).required(),
   }),
 });
 
-let [cityId, cityIdAttrs] = defineField('cityId');
+// let [cityId, cityIdAttrs] = defineField('cityId');
+let [cityTitle, cityTitleAttrs] = defineField('cityTitle');
 let [address, addressAttrs] = defineField('address');
 
 const router = useRouter();
@@ -316,21 +317,27 @@ const Locations = reactive([
 ]);
 
 let currentUser: any = ref({});
-const { step2: getAddress, updateStep2 } = useSteps();
+// const { step2: getAddress, updateStep2 } = useSteps();
+const isPageLoading = ref(false);
 
 const setCurrentUserData = async () => {
+  isPageLoading.value = true;
   try {
     const { data } = await getAddress();
     currentUser.value = {
       ...userStore.userData,
-      ...data,
+      ...data.data,
     };
-    currentUser.value.cityId &&
-      setFieldValue('cityId', currentUser.value.cityId ?? '');
+    // currentUser.value.cityId &&
+    //   setFieldValue('cityId', currentUser.value.cityId ?? '');
+    currentUser.value.cityName &&
+      setFieldValue('cityTitle', currentUser.value.cityName ?? '');
     currentUser.value.address &&
       setFieldValue('address', currentUser.value.address ?? '');
   } catch (err) {
     console.log(err);
+  } finally {
+    isPageLoading.value = false;
   }
 };
 
@@ -344,8 +351,8 @@ const onUpdateUserData = handleSubmit(async (values) => {
         longitude: 23,
       },
     };
-    const { data } = await updateStep2(payload);
-    router.push('/registeration-steps/step3');
+    await updateAddress(payload);
+    props.actions && router.push('/registeration-steps/step3');
   } catch (err) {
     console.log(err);
   }
