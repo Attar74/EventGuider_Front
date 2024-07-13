@@ -30,12 +30,18 @@ const questions = [
 </script>
 <template>
   <div class="overflow-y-scroll h-[99vh]">
-    <FaqUserCard
-      v-for="item in questions"
-      :key="item.qaTitle"
-      :qaTitle="item.qaTitle"
-      :date="item.date"
-      :answer="item.answer"
-    />
+    <section class="mt-10">
+      <FaqUserCard
+        v-for="item in questions"
+        :key="item.qaTitle"
+        :qaTitle="item.qaTitle"
+        :date="item.date"
+        :answer="item.answer"
+        showArchive
+        showDelete
+        showCopy
+        showStar
+      />
+    </section>
   </div>
 </template>

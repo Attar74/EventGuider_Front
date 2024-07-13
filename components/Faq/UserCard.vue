@@ -9,6 +9,10 @@ defineProps<{
   date?: string;
   answer?: string;
   imgPath?: string;
+  showDelete?: boolean;
+  showCopy?: boolean;
+  showStar?: boolean;
+  showArchive?: boolean;
 }>();
 </script>
 
@@ -27,11 +31,17 @@ defineProps<{
               {{ qaTitle }}
             </p>
           </div>
-          <div class="flex gap-x-[0.75rem] my-auto">
-            <copyIcon />
-            <archiveIcon />
-            <starIcon />
-            <svgDelete />
+          <div class="flex gap-x-[0.75rem] my-auto items-center">
+            <p
+              class="text-[#FF3D9A] text-3 leading-7 my-auto font-bold"
+              v-if="!showArchive"
+            >
+              Unarchive
+            </p>
+            <copyIcon v-if="showCopy" />
+            <archiveIcon v-if="showArchive" />
+            <starIcon v-if="showStar" />
+            <svgDelete v-if="showDelete" />
           </div>
         </div>
         <section class="mt-[0.75rem] flex gap-x-[4rem]">
