@@ -4,32 +4,7 @@
     :class="{ container: false, 'mx-[11rem]': true }"
   >
     <div>
-      <div class="text-center" v-if="false">
-        <div class="bg-[#ff3d9a08] mx-auto p-[1.5rem] w-[5rem] rounded-xl">
-          <svg
-            class="mx-auto"
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 56 56"
-            fill="none"
-          >
-            <path
-              d="M43.0769 10.7693H40.7077C40.2078 8.33845 38.8851 6.15431 36.9627 4.58495C35.0402 3.0156 32.6355 2.157 30.1538 2.15387L25.8461 2.15387C23.3644 2.157 20.9597 3.0156 19.0373 4.58495C17.1148 6.15431 15.7922 8.33845 15.2923 10.7693H12.923C10.0679 10.7727 7.3307 11.9084 5.31182 13.9273C3.29294 15.9461 2.15723 18.6834 2.15381 21.5385L2.15381 43.077C2.15723 45.9321 3.29294 48.6693 5.31182 50.6882C7.3307 52.7071 10.0679 53.8428 12.923 53.8462H43.0769C45.932 53.8428 48.6692 52.7071 50.6881 50.6882C52.707 48.6693 53.8427 45.9321 53.8461 43.077V21.5385C53.8427 18.6834 52.707 15.9461 50.6881 13.9273C48.6692 11.9084 45.932 10.7727 43.0769 10.7693ZM25.8461 6.46156H30.1538C31.4854 6.46708 32.7829 6.8839 33.8685 7.65498C34.9542 8.42607 35.7752 9.51376 36.219 10.7693H19.7809C20.2248 9.51376 21.0457 8.42607 22.1314 7.65498C23.2171 6.8839 24.5145 6.46708 25.8461 6.46156ZM12.923 15.0769H43.0769C44.7906 15.0769 46.4341 15.7577 47.6459 16.9695C48.8577 18.1813 49.5384 19.8248 49.5384 21.5385V28H6.4615V21.5385C6.4615 19.8248 7.14227 18.1813 8.35404 16.9695C9.56582 15.7577 11.2093 15.0769 12.923 15.0769ZM43.0769 49.5385H12.923C11.2093 49.5385 9.56582 48.8577 8.35404 47.6459C7.14227 46.4342 6.4615 44.7907 6.4615 43.077V32.3077H25.8461V34.4616C25.8461 35.0328 26.073 35.5806 26.477 35.9846C26.8809 36.3885 27.4287 36.6154 28 36.6154C28.5712 36.6154 29.119 36.3885 29.523 35.9846C29.9269 35.5806 30.1538 35.0328 30.1538 34.4616V32.3077H49.5384V43.077C49.5384 44.7907 48.8577 46.4342 47.6459 47.6459C46.4341 48.8577 44.7906 49.5385 43.0769 49.5385Z"
-              fill="#FF3D9A"
-            />
-          </svg>
-        </div>
-
-        <p class="text-[#2A2F4F] text-[1.5rem] font-bold leading-10 mt-[1rem]">
-          Add information about your business
-        </p>
-        <p class="text-[#7F8295] text-[1rem] leading-7">
-          Your storefront features information about your wedding services to
-          attract and convert our audience of engaged couples.
-        </p>
-      </div>
-      <form>
+      <form @submit.prevent="updateQuestionAnswers">
         <div class="my-[2.5rem]">
           <div
             class="w-full h-full overflow-hidden shadow-lg p-[1rem] sm:p-[1.5rem] rounded-2xl bg-[#fff] mx-auto"
@@ -81,9 +56,11 @@
                     </div>
                     <input
                       type="number"
-                      name="enter min price"
+                      name="minPrice"
                       class="w-full border-[#D4D5DC] border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] text-[#000] rounded-full block h-[3rem] md:h-[3.5rem] pl-10 p-2.5 dark:placeholder-[#AAACB9]"
                       placeholder="enter min price"
+                      v-model="minPrice"
+                      v-bind="minPriceAttrs"
                     />
                   </div>
                   <div
@@ -93,6 +70,12 @@
                       EGP
                     </p>
                   </div>
+                </div>
+                <div
+                  v-if="errors.minPrice"
+                  class="mt-[0.5rem] text-[#cc0000] mx-[1rem] text-[0.875rem] md:text-[1rem]"
+                >
+                  {{ errors.minPrice }}
                 </div>
               </div>
               <div class="col-span-2 md:col-span-1">
@@ -108,9 +91,11 @@
                     </div>
                     <input
                       type="number"
-                      name="email"
+                      name="maxPrice"
                       class="w-full border-[#D4D5DC] border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] text-[#000] rounded-full block h-[3rem] md:h-[3.5rem] pl-10 p-2.5 dark:placeholder-[#AAACB9]"
                       placeholder="enter max price"
+                      v-model="maxPrice"
+                      v-bind="maxPriceAttrs"
                     />
                   </div>
                   <div
@@ -120,6 +105,12 @@
                       EGP
                     </p>
                   </div>
+                </div>
+                <div
+                  v-if="errors.maxPrice"
+                  class="mt-[0.5rem] text-[#cc0000] mx-[1rem] text-[0.875rem] md:text-[1rem]"
+                >
+                  {{ errors.maxPrice }}
                 </div>
               </div>
             </div>
@@ -152,10 +143,18 @@
                   </div>
                   <input
                     type="number"
-                    name="enter min no."
+                    name="minCapacity"
                     class="w-full border-[#D4D5DC] border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] text-[#000] rounded-full block h-[3rem] md:h-[3.5rem] pl-10 p-2.5 dark:placeholder-[#AAACB9]"
                     placeholder="enter min no."
+                    v-model="minCapacity"
+                    v-bind="minCapacityAttrs"
                   />
+                </div>
+                <div
+                  v-if="errors.minCapacity"
+                  class="mt-[0.5rem] text-[#cc0000] mx-[1rem] text-[0.875rem] md:text-[1rem]"
+                >
+                  {{ errors.minCapacity }}
                 </div>
               </div>
               <div class="col-span-2 md:col-span-1">
@@ -170,13 +169,61 @@
                   </div>
                   <input
                     type="number"
-                    name="enter max no."
+                    name="maxCapacity"
                     class="w-full border-[#D4D5DC] border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] text-[#000] rounded-full block h-[3rem] md:h-[3.5rem] pl-10 p-2.5 dark:placeholder-[#AAACB9]"
                     placeholder="enter max no."
+                    v-model="maxCapacity"
+                    v-bind="maxCapacityAttrs"
                   />
+                </div>
+                <div
+                  v-if="errors.maxCapacity"
+                  class="mt-[0.5rem] text-[#cc0000] mx-[1rem] text-[0.875rem] md:text-[1rem]"
+                >
+                  {{ errors.maxCapacity }}
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="flex mt-[2rem] md:mt-[4rem]">
+          <div
+            class="flex flex-col sm:flex-row justify-center gap-x-[1.5rem] gap-y-[0.5rem] sm:gap-y-0 mx-auto"
+          >
+            <button
+              type="submit"
+              :disabled="saveBtnLoading"
+              class="rounded-[2rem] w-[11.25rem] border-[0.063rem] h-[3.5rem] border-[#FF3D9A]"
+              :class="
+                saveBtnLoading
+                  ? 'cursor-not-allowed bg-[#fc53a4] text-[#fff]'
+                  : 'bg-[#FF3D9A] cursor-pointer '
+              "
+            >
+              <p
+                v-if="!saveBtnLoading"
+                class="text-[#fff] text[1rem] leading-7 font-bold"
+              >
+                Save
+              </p>
+              <svg
+                v-else
+                aria-hidden="true"
+                class="mx-auto w-8 h-8 animate-spin text-[#e8388c] fill-white"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentFill"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </form>
@@ -186,4 +233,82 @@
 <script lang="ts" setup>
 import svgPrice from '@/components/svgs/Price.vue';
 import svgChair from '@/components/svgs/Chair.vue';
+import { getQuestions, updateQuestions } from '~/apis/questions';
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
+
+const isPageLoading = ref(false);
+const saveBtnLoading = ref(false);
+const { errors, handleSubmit, defineField, setFieldValue } = useForm<any>({
+  validationSchema: yup.object({
+    minPrice: yup
+      .number()
+      .typeError('min price is required')
+      .required('')
+      .max(yup.ref('maxPrice'), 'min price must be less than min price'),
+    maxPrice: yup
+      .number()
+      .typeError('max price is required')
+      .required('')
+      .min(yup.ref('minPrice'), 'max price must be greater than min price'),
+    maxCapacity: yup
+      .number()
+      .typeError('min number of guests is required')
+      .required()
+      .min(
+        yup.ref('minCapacity'),
+        'max capacity must be greater than min capacity'
+      ),
+    minCapacity: yup
+      .number()
+      .typeError('max number of guests is required')
+      .required()
+      .max(
+        yup.ref('maxCapacity'),
+        'min capacity must be less than max capacity'
+      ),
+  }),
+});
+
+const [minPrice, minPriceAttrs] = defineField('minPrice');
+const [maxPrice, maxPriceAttrs] = defineField('maxPrice');
+const [maxCapacity, maxCapacityAttrs] = defineField('maxCapacity');
+const [minCapacity, minCapacityAttrs] = defineField('minCapacity');
+
+const updateQuestionAnswers = handleSubmit(
+  async (values) => {
+    saveBtnLoading.value = true;
+    const { minPrice, maxPrice, maxCapacity, minCapacity } = values;
+    const questionPayload = {
+      minPrice,
+      maxPrice,
+      maxCapacity,
+      minCapacity,
+    };
+    try {
+      await updateQuestions(questionPayload);
+      saveBtnLoading.value = false;
+    } catch {}
+  },
+  ({ errors }) => {
+    const firstError = Object.keys(errors)[0];
+    const el: HTMLElement | null = document.querySelector(
+      `[name="${firstError}"]`
+    );
+    el?.scrollIntoView({
+      behavior: 'smooth',
+    });
+    el?.focus();
+  }
+);
+
+const setQuestionsAnswers = async () => {
+  const { data } = await getQuestions();
+  for (const key in data) {
+    setFieldValue(key, data[key] ?? 0);
+  }
+};
+onMounted(() => {
+  setQuestionsAnswers();
+});
 </script>
