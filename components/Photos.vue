@@ -209,7 +209,7 @@ const setCurrentUserData = async () => {
   try {
     const { data } = await getMedia();
     if (data) {
-      images.value = [...data.data];
+      images.value = [...data.data?.photosUrls];
     }
     currentUser.value = {
       ...userStore.userData,
@@ -222,8 +222,9 @@ const setCurrentUserData = async () => {
 };
 
 const removeImage = async (imageUrl: string) => {
+  const slicedImageUrl = imageUrl.split('/')[imageUrl.split('/').length - 1];
   try {
-    await deleteMedia(imageUrl);
+    await deleteMedia(slicedImageUrl);
   } catch (e) {
     console.error(e);
   } finally {
