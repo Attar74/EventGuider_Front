@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { refreshToken } from '~/apis/refreshToken';
+import { useUserStore } from '~/stores/user.state.js';
 
 const axiosIns: any = axios.create({
   baseURL: 'https://event-guider-dev.azurewebsites.net',
@@ -31,14 +33,30 @@ axiosIns.interceptors.response.use(
     // If the response is successful (status code 2xx), return it as-is
     return response;
   },
-  (error: any) => {
+  async (error: any) => {
+    const router = useRouter();
+    // const userStore = useUserStore();
+
     // If the response has a 401 status code, handle the unauthorized request
     if (error.response && error.response.status === 401) {
-      //   localStorage.removeItem('accessToken');
-      //   localStorage.removeItem('refreshToken');
-      //   localStorage.removeItem('user');
-      //   router.push('/');
-      //   window.location.reload();
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      router.push('/auth/login');
+
+      // const currentRefreshToken = localStorage.getItem('refreshToken');
+      // const payload = { token: currentRefreshToken };
+      // const { data } = await refreshToken(payload);
+      // const user = {
+      //   ...data.user,
+      //   accessToken: data.accessToken,
+      //   refreshToken: data.refreshToken,
+      // };
+      // userStore.updateUser(user);
+      // userStore.updateLoggedIn(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
 
     // For other errors, reject the promise and pass the error along
