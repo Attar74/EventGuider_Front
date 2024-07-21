@@ -1,3 +1,58 @@
+<script lang="ts" setup>
+import svgDelete from "@/components/svgs/delete.vue";
+import svgFb from "@/components/svgs/faceBook.vue";
+import instgramIcon from "./svgs/instgramIcon.vue";
+import xIcon from "./svgs/xIcon.vue";
+import { getNetworks, addNewNetwork, removeNetwork } from "~/apis/networks";
+
+interface Network {
+  id: string;
+  type: string;
+  link: string;
+}
+const networks = ref(["Facebook", "X", "Instagram"]);
+const selectedNetwork = ref(" Choose network");
+const showNetworks = ref(false);
+const networksList = ref<Network[]>([]);
+const newNetwork = ref({
+  type: "",
+  link: "",
+});
+const deleteNetwork = async (deletedNetwork: Network) => {
+  try {
+    await removeNetwork(deletedNetwork.id);
+    getAllNetworks();
+  } catch {}
+};
+
+const getAllNetworks = async () => {
+  try {
+    const {
+      data: { data },
+    } = await getNetworks();
+    networksList.value = data;
+  } catch {}
+};
+
+const addNetwork = async () => {
+  try {
+    if (!newNetwork.value.type) return alert("Please choose network");
+    if (!newNetwork.value.link) return alert("Please enter link");
+
+    await addNewNetwork(newNetwork.value);
+    getAllNetworks();
+    newNetwork.value = {
+      type: "",
+      link: "",
+    };
+  } catch {}
+};
+
+onMounted(() => {
+  getAllNetworks();
+});
+</script>
+
 <template>
   <div
     class="mx-auto px-[1rem] md:px-[4rem] mt-[2.5rem] mb-[10rem]"
@@ -55,33 +110,15 @@
                 </p>
                 <div class="flex gap-x-[0.5rem]">
                   <div class="relative mt-[0.25rem] mb-[0.5rem]">
-                    <input
-                      type="text"
-                      name="enter min price"
-                      class="w-full border-[#D4D5DC] border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] text-[#000] rounded-full block h-[3rem] md:h-[3.5rem] pl-[1rem] p-2.5 dark:placeholder-[#AAACB9]"
-                      placeholder="Choose network"
-                    />
-                    <div
-                      class="absolute inset-y-0 right-[1.25rem] flex items-center pl-3.5"
+                    <select
+                      id="networks"
+                      class="border-[#D4D5DC] font-bold border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] rounded-full block h-[3rem] md:h-[3.5rem] pl-4 p-2.5 pr-4 dark:placeholder-[#AAACB9]"
+                      v-model="newNetwork.type"
                     >
-                      <p class="text-[#2A2F4F] text-[1rem] leading-7 font-bold">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                        >
-                          <path
-                            d="M5 7.5L10 12.5L15 7.5"
-                            stroke="#2A2F4F"
-                            stroke-width="1.4"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
-                      </p>
-                    </div>
+                      <option v-for="network in networks" :value="network">
+                        {{ network }}
+                      </option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -92,6 +129,7 @@
                 <div class="flex gap-x-[0.5rem]">
                   <div class="mt-[0.25rem] mb-[0.5rem] w-full">
                     <input
+                      v-model="newNetwork.link"
                       type="text"
                       name="enter min price"
                       class="w-full border-[#D4D5DC] border-[0.063rem] outline-0 text-[0.875rem] md:text-[1rem] text-[#000] rounded-full block h-[3rem] md:h-[3.5rem] pl-[1rem] p-2.5 dark:placeholder-[#AAACB9]"
@@ -102,10 +140,11 @@
               </div>
               <div class="my-auto">
                 <button
+                  @click.prevent="addNetwork"
                   class="mt-[1rem] rounded-[2rem] bg-[#FF3D9A] border-[0.063rem] border-[#FF3D9A] w-[11.25rem] h-[3.5rem] cursor-pointer"
                 >
                   <p class="text-[#fff] text[1rem] leading-7 font-bold">
-                    Add Supplier
+                    Add Link
                   </p>
                 </button>
               </div>
@@ -113,12 +152,16 @@
           </div>
           <div class="mt-[2rem]">
             <div
-              class="flex gap-x-[1rem] w-full h-full overflow-hidden sm:p-[1.5rem] rounded-[0.75rem] mx-auto border-[0.063rem] border-[#ff3d9a1a] bg-[#ff3d9a08]"
+              class="flex gap-x-[1rem] w-full h-full overflow-hidden sm:p-[1.5rem] rounded-[0.75rem] mx-auto border-[0.063rem] border-[#ff3d9a1a] bg-[#ff3d9a08] mb-4"
+              v-for="network in networksList"
+              :key="network.id"
             >
               <div
                 class="bg-[#2A2F4F] rounded-[0.5rem] px-[0.75rem] py-[0.5rem]"
               >
-                <svgFb />
+                <svgFb v-if="network.type === 'facebook'" />
+                <instgramIcon v-else-if="network.type == 'instagram'" />
+                <xIcon v-else />
               </div>
               <div class="w-full">
                 <div class="flex justify-between w-full">
@@ -126,11 +169,14 @@
                     <p
                       class="text-[#2A2F4F] text-[1rem] font-bold leading-9 capitalize my-auto"
                     >
-                      www.facebook.com
+                      {{ network.link }}
                     </p>
                   </div>
 
-                  <div class="flex gap-x-[1rem] my-auto">
+                  <div
+                    class="flex gap-x-[1rem] my-auto cursor-pointer"
+                    @click="deleteNetwork(network)"
+                  >
                     <svgDelete />
                   </div>
                 </div>
@@ -142,7 +188,13 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
-import svgDelete from '@/components/svgs/delete.vue';
-import svgFb from '@/components/svgs/faceBook.vue';
-</script>
+<style scoped>
+select {
+  width: 268px;
+  font-size: 16px;
+  line-height: 1;
+  background: url("public/assets/svgs_icons/down-icon.svg") no-repeat right #fff;
+  -webkit-appearance: none;
+  background-position-x: 244px;
+}
+</style>
